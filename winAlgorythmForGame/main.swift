@@ -17,13 +17,4 @@ var players: [Player] = []
 startTheGame()
 showPlayer("Alex")
 
-func test(_ player: String) {
-    
-    for i in players {
-        if i.name == player {
-            i.points = i.points + 1
-            print(i.points)
-        }
-    }
-}
-test("Alex")
+
