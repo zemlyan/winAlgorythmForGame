@@ -21,6 +21,7 @@ class Player {
     var biggestFirstMovesCountEver: Int // наибольшее кол-во первых ходов, сделанных подряд, за всю игру
     var wins: Int                       // всего побед
     var totalplayedGames: Int           // всего игр
+    var created = 0
     
     init () {
         name = ""
@@ -29,15 +30,16 @@ class Player {
         secondTurns = 0
         firstTurnsTotal = 0
         secondTurnsTotal = 0
-        online = false
+        online = true
         xp = 0
         biggestFirstMovesCountEver = 0
         wins = 0
         totalplayedGames = 0
     }
     
-    func available() {
+    func available() -> Bool {
         online = Bool.random()
+        return online
     }
     
 }

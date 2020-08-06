@@ -16,7 +16,7 @@ var playersCount = 0
 var totalGames = 0
 
 var winner = Player()
-var looser = Player()
+var loser = Player()
 var firstMoveIndex = 0
 
 var players: [Player] = []
