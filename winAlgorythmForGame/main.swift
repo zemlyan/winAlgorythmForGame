@@ -12,10 +12,16 @@ let xpWin = 10
 let xpLose = 1
 let pointsWin = 100
 
-var players: [Player] = []
+var playersCount = 0
+var totalGames = 0
 
+var winner = Player()
+var looser = Player()
+var firstMoveIndex = 0
+
+var players: [Player] = []
 startTheGame()
+playGame()
 showPlayer("Alex")
 showPlayer("Lina")
-
 
