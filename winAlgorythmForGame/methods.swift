@@ -9,25 +9,21 @@
 import Foundation
 
 // проверяет доступность игрока
-
 func areYouOnline(_ player: Player) -> Bool {
     return player.online
 }
 
 // проверяет хватает ли денег на ставку
 func isEnoughMoneyForBid(_ player: Player) -> Bool {
-    return player.points >= 100
-}
-
-
-func letsPlay(_ player1: Player, _ player2: Player) {
-    player1.points = player1.points + 50
-    player1.xp = player1.xp + 10
-    
+    if player.points <= 100 {
+        player.points = player.points + 10
+        return false
+    } else {
+        return true
+    }
 }
 
 // ищем победителя игры
-
 func whoWin(_ player1: Player, _ player2: Player) -> (Player, Player, Int) {
     
     // вычисляем коэфициент первого хода. 0 - ходит первый игрок.
@@ -53,7 +49,6 @@ func whoWin(_ player1: Player, _ player2: Player) -> (Player, Player, Int) {
 
 
 // записываем результаты при удачной игре
-
 func successResultsWrite(_ player1: Player, _ player2: Player, _ firstMove: Int
     ) {
     let point = 1 - firstMove
@@ -96,6 +91,7 @@ func successResultsWrite(_ player1: Player, _ player2: Player, _ firstMove: Int
     player2.available()
 }
 
+// начинаем игру с того, что создаем игроков по кол-ву имен в списке
 func startTheGame() {
     for i in playersNameArray {
         let name = i
@@ -106,15 +102,9 @@ func startTheGame() {
     print(players.count, " players was created")
 }
 
-
+//вывод статистики игрока на экран
 func showPlayer(_ player: String) {
     var playerForShow: Player = Player()
-    var available: String = ""
-    if playerForShow.online {
-        available = "online"
-    } else {
-        available = "offline"
-    }
     
     for i in players {
         if i.name == player {
@@ -123,11 +113,12 @@ func showPlayer(_ player: String) {
     }
     
     print(playerForShow.name)
-    print("Available: ", available)
+    print("Available: ", playerForShow.online ? "online" : "offline")
     print("Points: ", playerForShow.points)
     print("Expirience: ", playerForShow.xp)
     print()
     print("First moves total: ", playerForShow.firstTurnsTotal)
-    print("The biggest count of first moves: ", playerForShow.biggestFirstMovesCountEver)
-    
+    print("The biggest count of first moves in a row: ", playerForShow.biggestFirstMovesCountEver)
+    print()
+    print()
 }

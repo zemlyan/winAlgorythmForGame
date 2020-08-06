@@ -16,5 +16,6 @@ var players: [Player] = []
 
 startTheGame()
 showPlayer("Alex")
+showPlayer("Lina")
 
 
