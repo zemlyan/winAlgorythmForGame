@@ -8,14 +8,60 @@
 
 import Foundation
 
+// начинаем игру с того, что создаем игроков по кол-ву имен в списке
+func startTheGame() {
+    for i in playersNameArray {
+        let name = i
+        let i = Player()
+        i.name = name
+        players.append(i)
+        playersCount = playersCount + 1
+    }
+    print(players.count, " players was created")
+    print()
+    print()
+}
+
+
+func playGame() {
+    for first in 0...playersCount-1 {
+        for second in 0...playersCount-1 {
+            let firstPlayer = players[first]
+            let secondPlayer = players[second]
+            if (firstPlayer.name != secondPlayer.name) && isEnoughMoneyForBid(secondPlayer) && areYouOnline(secondPlayer){
+                totalGames = totalGames + 1
+//                print("!!!! ", totalGames, " game")
+                    whoWin(firstPlayer, secondPlayer)
+                    successResultsWrite()
+                
+                    if firstPlayer.name == winner.name {
+                        players[first] = winner
+                        players[second] = loser
+                    } else {
+                        players[first] = loser
+                        players[second] = winner
+                    }
+            } else {
+//                if !isEnoughMoneyForBid(secondPlayer){
+//                    print("not enough money")
+//                }
+//                if !areYouOnline(secondPlayer) {
+//                    print("offline")
+//                }
+                
+            }
+        }
+    }
+}
+
 // проверяет доступность игрока
 func areYouOnline(_ player: Player) -> Bool {
-    return player.online
+    return player.available()
 }
 
 // проверяет хватает ли денег на ставку
 func isEnoughMoneyForBid(_ player: Player) -> Bool {
-    if player.points <= 100 {
+    if player.points < 100 {
         player.points = player.points + 10
         return false
     } else {
@@ -24,7 +70,7 @@ func isEnoughMoneyForBid(_ player: Player) -> Bool {
 }
 
 // ищем победителя игры
-func whoWin(_ player1: Player, _ player2: Player) -> (Player, Player, Int) {
+func whoWin(_ player1: Player, _ player2: Player){
     
     // вычисляем коэфициент первого хода. 0 - ходит первый игрок.
     var firstMoveCoef = 0
@@ -36,70 +82,65 @@ func whoWin(_ player1: Player, _ player2: Player) -> (Player, Player, Int) {
         firstMoveCoef = 0
     }
     
+    firstMoveIndex = firstMoveCoef
+    
     // вычисляем коэфициент опыта
     let coefitient: Int = (player1.xp - player2.xp)/10
     
     // вычисляем победителя
     if (Int(arc4random_uniform(100)) + coefitient + (1 - firstMoveCoef)) > (Int(arc4random_uniform(100)) + (0 + firstMoveCoef)) {
-        return (player1, player2, firstMoveCoef)
+        winner = player1
+        loser = player2
+//        print("(", winner.totalplayedGames, "), (", loser.totalplayedGames, ")")
     } else {
-        return (player2, player1, firstMoveCoef)
+        winner = player2
+        loser = player1
+//        print("(", winner.totalplayedGames, "), (", loser.totalplayedGames, ")")
     }
 }
 
 
 // записываем результаты при удачной игре
-func successResultsWrite(_ player1: Player, _ player2: Player, _ firstMove: Int
-    ) {
-    let point = 1 - firstMove
+func successResultsWrite() {
+    let point = 1 - firstMoveIndex
     
     // обнуляем первые и вторые ходы
-    if firstMove == 0 {
-        player1.secondTurns = firstMove
-        player2.firstTurns = firstMove
+    if firstMoveIndex == 0 {
+        winner.secondTurns = firstMoveIndex
+        loser.firstTurns = firstMoveIndex
     } else {
-        player1.firstTurns = point
-        player2.secondTurns = point
+        winner.firstTurns = point
+        loser.secondTurns = point
     }
     
-    // записываем результаты первого игрока
-    player1.points = player1.points + pointsWin
-    player1.firstTurns = player1.firstTurns + point
-    player1.secondTurns = player1.secondTurns + firstMove
-    player1.firstTurnsTotal = player1.firstTurnsTotal + point
-    player1.secondTurnsTotal = player1.secondTurnsTotal + firstMove
-    player1.xp = player1.xp + xpWin
-    player1.wins = player1.wins + 1
-    player1.totalplayedGames = player1.totalplayedGames + 1
-    if player1.firstTurns > player1.biggestFirstMovesCountEver {
-        player1.biggestFirstMovesCountEver = player1.firstTurns
+    // записываем результаты победителя
+    winner.points = winner.points + pointsWin
+    winner.firstTurns = winner.firstTurns + point
+    winner.secondTurns = winner.secondTurns + firstMoveIndex
+    winner.firstTurnsTotal = winner.firstTurnsTotal + point
+    winner.secondTurnsTotal = winner.secondTurnsTotal + firstMoveIndex
+    winner.xp = winner.xp + xpWin
+    winner.wins = winner.wins + 1
+    winner.totalplayedGames = winner.totalplayedGames + 1
+    if winner.firstTurns > winner.biggestFirstMovesCountEver {
+        winner.biggestFirstMovesCountEver = winner.firstTurns
     }
     
-    // записываем результаты второго игрока
-    player2.points = player2.points - pointsWin
-    player2.firstTurns = player2.firstTurns + firstMove
-    player2.secondTurns = player2.secondTurns + point
-    player2.firstTurnsTotal = player2.firstTurnsTotal + firstMove
-    player2.secondTurnsTotal = player2.secondTurnsTotal + point
-    player2.xp = player2.xp + xpLose
-    player1.totalplayedGames = player1.totalplayedGames + 1
-    if player1.firstTurns > player1.biggestFirstMovesCountEver {
-        player1.biggestFirstMovesCountEver = player1.firstTurns
+    // записываем результаты проигравшего
+    loser.points = loser.points - pointsWin
+    loser.firstTurns = loser.firstTurns + firstMoveIndex
+    loser.secondTurns = loser.secondTurns + point
+    loser.firstTurnsTotal = loser.firstTurnsTotal + firstMoveIndex
+    loser.secondTurnsTotal = loser.secondTurnsTotal + point
+    loser.xp = loser.xp + xpLose
+    loser.totalplayedGames = loser.totalplayedGames + 1
+    if loser.firstTurns > loser.biggestFirstMovesCountEver {
+        loser.biggestFirstMovesCountEver = loser.firstTurns
     }
 
-    // второй игрок решает остаться в игре или выйти
-    player2.available()
-}
-
-// начинаем игру с того, что создаем игроков по кол-ву имен в списке
-func startTheGame() {
-    for i in playersNameArray {
-        let name = i
-        let i = Player()
-        i.name = name
-        players.append(i)
-    }
-    print(players.count, " players was created")
+    // проигравший решает остаться в игре или выйти
+    loser.online = loser.available()
+    
 }
 
 //вывод статистики игрока на экран
@@ -119,6 +160,7 @@ func showPlayer(_ player: String) {
     print()
     print("First moves total: ", playerForShow.firstTurnsTotal)
     print("The biggest count of first moves in a row: ", playerForShow.biggestFirstMovesCountEver)
+    print("Games played total: ", playerForShow.totalplayedGames)
     print()
     print()
 }
